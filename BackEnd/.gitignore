@@ -1,3 +1,7 @@
+
+# Application-specific ignores
+uploads/
+
 # Logs
 logs
 *.log

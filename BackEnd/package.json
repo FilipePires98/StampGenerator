@@ -1,0 +1,28 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Simple back-end server with public REST API for image stamping.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "build": "",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FilipePires98/StampGenerator.git"
+  },
+  "author": "Filipe Pires",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FilipePires98/StampGenerator/issues"
+  },
+  "homepage": "https://github.com/FilipePires98/StampGenerator#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "gm": "^1.23.1",
+    "multer": "^1.4.2",
+    "path": "^0.12.7"
+  }
+}
