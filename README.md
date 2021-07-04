@@ -7,6 +7,8 @@ Stamp Generator consists of:
 - a simple web back-end service that inputs an image (using POST) and adds a stamp/watermark on top of the image and returns the image with the stamp
 - a simple browser-based Three.js application that prompts the user to upload an image, calls the back-end to add a stamp to the image and show's a very simple "art gallery" with the uploaded image with a stamp
 
+![banner](https://github.com/FilipePires98/StampGenerator/blob/main/BackEnd/public/banner.png)
+
 ## Instructions to Build and Run
 
 ### Back-End
