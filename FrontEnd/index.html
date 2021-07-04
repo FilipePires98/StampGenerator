@@ -1,0 +1,118 @@
+<html>
+    <head>
+
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+        <title>Stamp Generator</title>
+
+        <style>
+            body {
+                font-family: Monospace;
+				background-color: #000;
+                color:#aaa;
+                font-size:12px;
+				margin: 0px;
+				overflow: hidden;
+				padding:0;
+				position:relative;
+				height:100%;
+            }
+        </style>
+
+        <script src="./libs/jquery.min.js"></script>
+        <script src="./libs/three.min.js"></script>
+        <script src="./libs/Tween.js"></script>
+        <script src="./assets/helvetiker_regular.typeface.js"></script>
+
+        <script src="./src/carousel.js"></script>
+        <script src="./src/app.js"></script>
+
+    </head>
+    <body>
+        <p>Click on the "Choose File" button to upload a file:</p>
+        <form action="" method="post" enctype="multipart/form-data">
+            <input type="file" id="file" name="file">
+            <input type="button" class="button" value="upload" id="btn_upload">
+        </form>
+
+        <div id="aside" style="position:absolute;z-index:100;width:400px;">
+            <ul>
+                <li>Drag Mouse left-right to rotate Carousel</li>
+                <li>Drag Mouse up-down to zoom out/in</li>
+                <li>Double Click on item to bring to front</li>
+            </ul>
+		</div>
+		
+        <div id="container" style="position:relative;margin:0 auto;padding:0;cursor:pointer"></div>
+		
+        <script type="text/javascript">
+            /*
+            app.init([
+                {url:'assets/d1.jpg', caption:'d1.jpg', width:150, height:100},
+                {url:'assets/d2.jpg', caption:'d2.jpg', width:150, height:100}
+            ]);
+            
+            app.add([
+                {url:'assets/d3.jpg', caption:'d3.jpg', width:150, height:100}
+            ]);
+            */
+
+            app.init([]);
+
+            $(document).ready(function() {
+                $("#btn_upload").click(function(){
+                    var fd = new FormData();
+                    var files = $("#file")[0].files[0];
+                    fd.append('file', files);
+
+                    // using xmlhttprequest
+                    const Http = new XMLHttpRequest();
+                    const url = "http://localhost:3000/stamp";
+                    Http.open("POST", url);
+                    Http.responseType = "blob";
+                    Http.send(fd);
+                    Http.onreadystatechange = async function(){
+                        if(this.readyState==4 && this.status==200) {
+                            var reader = new FileReader();
+                            reader.readAsDataURL(Http.response);
+                            reader.onloadend = function() {
+                                var link = document.createElement('a');
+                                link.href = reader.result; // "data:image/jpeg;base64," + Http.response
+                                link.download = "stamped_"+files.name;
+                                // console.log(link);
+
+                                app.add([
+                                    {url:link.href, caption:link.download, width:150, height:100}
+                                ]);
+                                link.click();
+                            }
+                        }
+                    }
+
+                    /*
+                    // using ajax
+                    $.ajax({
+                        url: "http://localhost:3000/stamp",
+                        type: "post",
+                        data: fd,
+                        contentType: false,
+                        processData: false,
+                        success: function(data) {
+                            var link = document.createElement('a');
+                            link.href = "data:image/jpeg;base64," + data;
+                            link.download = "stamped_"+files.name;
+
+                            app.add([
+                                {url:link.href, caption:link.download, width:150, height:100}
+                            ]);
+                            link.click();
+                        }
+                    })
+                    */
+                })
+            })
+        </script>
+    </body>
+</html>

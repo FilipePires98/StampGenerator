@@ -1,18 +1,31 @@
 
+/**
+ * Title: index.js
+ * Description: Server's main file, where application is started and REST API is configured.
+ * 
+ * Author: Filipe Pires
+ * Date: 04/07/2021
+ */
+
 // External Dependencies
-// (whenever a new module is required, use "npm install multer --save" so that in the future it is only needed to run "npm install")
+
 const express = require('express');
 const path = require('path');
 const multer = require('multer'); 
+const fs = require('fs');
 
 // Internal Dependencies
+
 const constants = require('./constants');
 const stamping = require('./stamping');
+const cors = require("./auth-cors");
 
 // Application Startup
 
 var app = express();
 var port = process.env.PORT || constants.default_port
+
+app.use(cors);
 
 app.listen(port, () => {
     console.log("Server running on port " + port);
@@ -21,7 +34,7 @@ app.listen(port, () => {
 // Configuration for the storage procedure of images received
 
 const imageStorage = multer.diskStorage({
-    destination: constants.path_uploads, // destination to temporarily store image
+    destination: constants.path_uploads, // destination to temporarily store original uploaded image
     filename: (req, file, cb) => { // generate unique file name
         cb(null, file.fieldname + '_' + Date.now() + path.extname(file.originalname));
     }
@@ -46,26 +59,11 @@ app.get('/', (req, res) => {
     res.send("StampGenerator Back-End"); 
 });
 
-app.post('/stamp', upload.single('file'), (req, res) => {
+app.post('/stamp', upload.single('file'), async (req, res) => {
 
-    // apply stamp to image and store it locally for logging purposes
-    var stamp_application = stamping.applyStamp(req.file, constants.stamp_position);
-
-    // check if stamping was successful
+    var stamp_application = await stamping.applyStamp(req.file, constants.stamp_position);
     if(stamp_application.result >= 0) {
-
-        // wait until stamped image has been stored
-        var wait_write = stamping.waitForImageWrite(stamp_application.out);
-
-        // check if storing process did not timeout
-        if (wait_write >= 0) {
-
-            // send stamped file as a response to the api call
-            res.sendFile(path.resolve(stamp_application.out));
-        } else {
-            res.status(402).send({ error: "timeout attempting to return stamped image." });
-        }
-        
+        res.sendFile(path.resolve(stamp_application.out)); //, {encoding: 'base64'});
     } else {
         res.status(401).send({ error: stamp_application.out });
     }
